@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Вітрило</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;600&family=Manrope:wght@400;500;700&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+:root{--bg:#e8eef4;--ink:#0a1b3d;--mute:#4a5b7a;--line:#0a1b3d33;--accent:#2440ff;--panel:#f6f9fcd9;--p:36,64,255;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#07122b;--ink:#e6eeff;--mute:#9fb0d3;--line:#e6eeff33;--accent:#7f95ff;--panel:#0d1c40d9;--p:127,149,255}}
+:root[data-theme="dark"]{--bg:#07122b;--ink:#e6eeff;--mute:#9fb0d3;--line:#e6eeff33;--accent:#7f95ff;--panel:#0d1c40d9;--p:127,149,255}
+body{transition:background .6s,color .6s}
+:root[data-mode="waves"]{--bg:#d6ece8;--ink:#05302d;--mute:#3f6460;--line:#05302d33;--accent:#00796b;--panel:#f0faf8d9;--p:0,121,107}
+@media (prefers-color-scheme:dark){:root[data-mode="waves"]:not([data-theme="light"]){--bg:#031d1c;--ink:#dcf6f1;--mute:#8fc4bc;--line:#dcf6f133;--accent:#4fd1c0;--panel:#07302ed9;--p:79,209,192}}
+:root[data-mode="waves"][data-theme="dark"]{--bg:#031d1c;--ink:#dcf6f1;--mute:#8fc4bc;--line:#dcf6f133;--accent:#4fd1c0;--panel:#07302ed9;--p:79,209,192}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Manrope,system-ui,sans-serif}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+main{position:relative;z-index:1}
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:clamp(24px,6vw,96px)}
+nav{display:flex;justify-content:space-between;align-items:center;position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;padding:24px clamp(24px,6vw,96px)}
+.logo{font:600 18px Unbounded,sans-serif;letter-spacing:-.02em}
+nav a{color:var(--ink);text-decoration:none;font-weight:500;border-bottom:1px solid var(--line)}
+h1{font:300 clamp(44px,10vw,160px)/.95 Unbounded,sans-serif;letter-spacing:-.05em;margin:0 0 28px}
+h1 b{font-weight:600}
+.lead{max-width:46ch;color:var(--mute);font-size:19px;margin:0 0 36px}
+.btn{display:inline-block;background:var(--accent);color:var(--bg);padding:16px 28px;border-radius:999px;font-weight:700;text-decoration:none}
+.btn:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.hint{position:absolute;bottom:92px;left:clamp(24px,6vw,96px);right:24px;color:var(--mute);font-size:14px}
+h2{font:600 clamp(28px,4vw,52px)/1.05 Unbounded,sans-serif;letter-spacing:-.04em;margin:0 0 40px;max-width:18ch}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));border-top:1px solid var(--line)}
+.col{padding:28px 28px 28px 0;border-right:1px solid var(--line)}
+.col:last-child{border-right:0}
+.col h3{font:600 20px Unbounded,sans-serif;letter-spacing:-.03em;margin:0 0 10px}
+.col p{margin:0;color:var(--mute)}
+.panel{background:var(--panel);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:28px;padding:clamp(20px,4vw,48px);max-width:760px}
+.read{display:flex;gap:32px;align-items:center;flex-wrap:wrap;margin-bottom:28px}
+.dial{width:132px;height:132px;flex:none}
+.val{font:300 clamp(44px,7vw,84px)/1 Unbounded,sans-serif;letter-spacing:-.05em}
+.val small{font-size:.28em;color:var(--mute);letter-spacing:0;margin-left:6px}
+label{display:block;font-weight:700;margin:18px 0 6px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.row{display:flex;justify-content:space-between;color:var(--mute);font-size:14px}
+.modes{position:fixed;z-index:5;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:2px;padding:5px;border-radius:999px;background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);max-width:calc(100vw - 16px)}
+.modes button{all:unset;cursor:pointer;padding:10px 15px;border-radius:999px;font:600 14px Manrope,sans-serif;color:var(--ink);transition:background .25s,color .25s;white-space:nowrap}
+.modes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+.modes button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.modes i{width:1px;height:22px;background:var(--line);margin:0 4px}
+.boats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.boat{all:unset;box-sizing:border-box;cursor:pointer;padding:16px 18px;border:1px solid var(--line);border-radius:18px;background:var(--panel);transition:border-color .2s,background .2s}
+.boat:hover{border-color:var(--accent)}
+.boat[aria-pressed=true]{border-color:var(--accent);background:var(--accent);color:var(--bg)}
+.boat:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.boat b{display:block;font:600 16px Unbounded,sans-serif;letter-spacing:-.03em}
+.boat span{font-size:14px;opacity:.8}
+.sea{position:static;inset:auto;width:100%;height:220px;display:block;border-radius:18px;margin-bottom:18px;background:rgba(var(--p),.07)}
+.bar{position:relative;height:18px;border-radius:9px;overflow:hidden;display:flex;margin:44px 0 8px}
+.z1{background:rgba(var(--p),.55)}.z2{background:#e0a100}.z3{background:#d63a3a;flex:1}
+.mk{position:absolute;top:-34px;transform:translateX(-50%);font:600 13px Unbounded,sans-serif;transition:left .25s}
+.mk::after{content:'';display:block;width:2px;height:46px;background:var(--ink);margin:2px auto 0}
+.scale{display:flex;justify-content:space-between;color:var(--mute);font-size:13px}
+.verdict{font:600 clamp(20px,3vw,32px)/1.15 Unbounded,sans-serif;letter-spacing:-.04em;margin:24px 0 6px}
+.note{color:var(--mute);margin:0;font-size:15px}
+footer{padding:48px clamp(24px,6vw,96px) 96px;color:var(--mute);font-size:14px;border-top:1px solid var(--line);position:relative;z-index:1;background:var(--bg)}
+</style>
+</head>
+<body>
+<canvas id="c" aria-hidden="true"></canvas>
+<main>
+<section id="top">
+<nav><span class="logo" data-t="logo"></span><a href="#buy" data-t="navbuy"></a></nav>
+<h1><span data-t="h1a"></span><br><b id="hw"></b></h1>
+<p class="lead" data-t="lead"></p>
+<div><a class="btn" href="#live" data-t="btnlive"></a></div>
+<div class="hint" id="hint"></div>
+</section>
+
+<section id="live">
+<h2 data-t="h2live"></h2>
+<div class="panel">
+<div class="read">
+<svg class="dial" viewBox="0 0 132 132" role="img" data-a="compass">
+<circle cx="66" cy="66" r="62" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"/>
+<g id="needle"><path d="M66 12 L76 66 L66 58 L56 66 Z" fill="var(--accent)"/></g>
+<circle cx="66" cy="66" r="4" fill="currentColor"/>
+</svg>
+<div class="val"><span id="sp">12</span><small id="su"></small></div>
+</div>
+<label for="dir"><span data-t="dirl"></span>: <span id="dv">90</span>°</label>
+<input id="dir" type="range" min="0" max="359" value="90">
+<label for="spd" data-t="spdl"></label>
+<input id="spd" type="range" min="1" max="40" value="12">
+<div class="row"><span data-t="calm"></span><span data-t="storm"></span></div>
+</div>
+</section>
+
+<section id="boats">
+<h2 data-t="h2boats"></h2>
+<div class="panel">
+<div class="boats" id="list" role="group" data-a="listA"></div>
+<canvas id="sea" class="sea" role="img" data-a="seaA"></canvas>
+<label for="spd2"><span id="lw"></span>: <span id="kn">12</span> <span id="ku"></span>, <span id="bf"></span></label>
+<input id="spd2" type="range" min="1" max="40" value="12">
+<div class="bar"><div class="z1" id="z1"></div><div class="z2" id="z2"></div><div class="z3"></div><div class="mk" id="mk">12</div></div>
+<div class="scale" id="sc"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<p class="verdict" id="vd" aria-live="polite"></p>
+<p class="note" id="nt"></p>
+<p class="note" style="margin-top:14px;font-size:13px" data-t="disc"></p>
+</div>
+</section>
+
+<section id="why">
+<h2 data-t="h2why"></h2>
+<div class="cols">
+<div class="col"><h3 data-t="c1h"></h3><p data-t="c1p"></p></div>
+<div class="col"><h3 data-t="c2h"></h3><p data-t="c2p"></p></div>
+<div class="col"><h3 data-t="c3h"></h3><p data-t="c3p"></p></div>
+</div>
+</section>
+
+<section id="buy">
+<h2 data-t="h2buy"></h2>
+<p class="lead" data-t="buyp"></p>
+<div><a class="btn" href="mailto:vitrylo@gmail.com" data-t="btnbuy"></a></div>
+</section>
+</main>
+<footer data-t="foot"></footer>
+<div class="modes" role="group" data-a="modesA">
+<button type="button" id="mw" data-t="mw" aria-pressed="true"></button>
+<button type="button" id="mv" data-t="mv" aria-pressed="false"></button>
+<i></i>
+<button type="button" id="lu" aria-pressed="true" lang="uk">UA</button>
+<button type="button" id="le" aria-pressed="false" lang="en">EN</button>
+</div>
+
+<script>
+(function(){
+var D={
+uk:{title:'Вітрило — кишеньковий анемометр',logo:'Вітрило',navbuy:'Передзамовлення',h1a:'Бачити',hw:'вітер.',hv:'хвилю.',
+lead:'Кишеньковий анемометр для яхтсменів і кайтерів. Показує швидкість і напрямок вітру на екрані телефону, без проводів і калібрування.',
+btnlive:'Спробувати наживо',hintw:'Проведіть курсором або пальцем по екрану: вітер обійде його.',hintv:'Потягніть повзунки нижче: що сильніший вітер, то вища хвиля.',
+h2live:'Поверніть вітер самі',dirl:'Напрямок',spdl:'Швидкість',calm:'штиль',storm:'шторм',compass:'Компас із напрямком вітру',
+h2boats:'Чи витримає ваша яхта',listA:'Оберіть судно',seaA:'Анімація: обране судно йде по хвилях',
+disc:'Значення орієнтовні для досвідченого екіпажу. Перед виходом дивіться прогноз та інструкцію виробника.',
+lwd:'Вітер',lwv:'Хвиля',kn:'вузлів',kns:'вуз',mu:'м',um:'м хвиля',
+bf:['слабкий вітер','помірний вітер','сильний вітер','штормовий вітер'],
+sea:['гладка вода','брижі','легке хвилювання','помірне хвилювання','значне хвилювання','сильне хвилювання','дуже сильне хвилювання','штормове море'],
+v1:'Виходьте спокійно',v2:'Беріть рифи',v3:'Краще залишитись у порту',
+n1:'Вітрила повні, човен працює в комфортному режимі.',n2:'Вітер вищий за комфортний ({a} вуз). Зменште площу вітрил і тримайте екіпаж напоготові.',n3:'Вітер вищий за межу для цього судна ({m} вуз).',nf:' Комфортно до {a} вуз, межа близько {m} вуз.',
+w1:'Судно йде впевнено.',w2:'Хвиля вища за комфортну: зменште вітрила.',w3:'Хвиля вища за межу для цього судна.',wf:' Комфортно до {a} м, межа близько {m} м.',
+sunk:'Судно затонуло',sunkH:'Зменште вітер, щоб спустити судно знову',sunkW:'Зменште хвилю, щоб спустити судно знову',ovH:'Вітер вищий за межу!',ovW:'Хвиля вища за межу!',
+h2why:'Три речі, заради яких його беруть на борт',
+c1h:'Без щогли',c1p:'Датчик кріпиться на леєр або кепку. Дані приходять по Bluetooth на відстань до 30 метрів.',
+c2h:'Читається на сонці',c2p:'Великі цифри й контрастний екран: швидкість видно одразу, навіть у сонцезахисних окулярах.',
+c3h:'Пам’ятає пориви',c3p:'Журнал за останню добу покаже, коли вітер посилювався, і допоможе вибрати час виходу.',
+h2buy:'Перша партія: 300 штук',buyp:'Залиште пошту, і ми напишемо, коли відкриється передзамовлення. Ціна для перших покупців: 89 €.',btnbuy:'Записатися до списку',
+foot:'Вітрило — навчальний концепт. Дизайн і верстка: ваше ім’я тут.',modesA:'Режим і мова',mw:'Вітер',mv:'Хвилі'},
+en:{title:'Vitrylo — pocket anemometer',logo:'Vitrylo',navbuy:'Pre-order',h1a:'See the',hw:'wind.',hv:'waves.',
+lead:'A pocket anemometer for sailors and kitesurfers. It shows wind speed and direction on your phone screen, with no wires and no calibration.',
+btnlive:'Try it live',hintw:'Move your cursor or finger across the screen: the wind flows around it.',hintv:'Drag the sliders below: the stronger the wind, the higher the wave.',
+h2live:'Turn the wind yourself',dirl:'Direction',spdl:'Speed',calm:'calm',storm:'storm',compass:'Compass showing wind direction',
+h2boats:'Will your yacht hold up?',listA:'Choose a boat',seaA:'Animation: the chosen boat sailing over waves',
+disc:'Values are approximate for an experienced crew. Check the forecast and the manufacturer’s manual before you sail.',
+lwd:'Wind',lwv:'Wave',kn:'knots',kns:'kn',mu:'m',um:'m waves',
+bf:['light wind','moderate wind','strong wind','storm-force wind'],
+sea:['flat water','ripples','slight sea','moderate sea','rough sea','very rough sea','high sea','storm sea'],
+v1:'Go out with confidence',v2:'Take a reef',v3:'Better stay in port',
+n1:'Full sails, the boat works in its comfort zone.',n2:'Wind is above the comfortable level ({a} kn). Reduce sail area and keep the crew ready.',n3:'Wind is above the limit for this boat ({m} kn).',nf:' Comfortable up to {a} kn, limit about {m} kn.',
+w1:'The boat is sailing with confidence.',w2:'The wave is above comfortable: reduce sail.',w3:'The wave is above this boat’s limit.',wf:' Comfortable up to {a} m, limit about {m} m.',
+sunk:'The boat has sunk',sunkH:'Lower the wind to launch the boat again',sunkW:'Lower the wave to launch the boat again',ovH:'Wind above the limit!',ovW:'Wave above the limit!',
+h2why:'Three reasons it comes aboard',
+c1h:'No mast needed',c1p:'The sensor clips to a lifeline or a cap. Data reaches your phone over Bluetooth up to 30 metres away.',
+c2h:'Readable in sunlight',c2p:'Large digits and a high-contrast screen: you see the speed at once, even in sunglasses.',
+c3h:'Remembers gusts',c3p:'A 24-hour log shows when the wind picked up and helps you choose when to leave.',
+h2buy:'First batch: 300 units',buyp:'Leave your email and we will write when pre-orders open. Price for first buyers: €89.',btnbuy:'Join the list',
+foot:'Vitrylo is a concept project. Design and code: your name here.',modesA:'Mode and language',mw:'Wind',mv:'Waves'}
+};
+var B=[
+{n:'Optimist',t:{uk:'дитячий дингі, 2,3 м',en:'kids’ dinghy, 2.3 m'},a:10,m:16},
+{n:'ILCA 7 (Laser)',t:{uk:'одиночка, 4,2 м',en:'single-hander, 4.2 m'},a:16,m:25},
+{n:'Hobie Cat 16',t:{uk:'катамаран, 5,0 м',en:'catamaran, 5.0 m'},a:18,m:28},
+{n:'Jeanneau Sun Odyssey 410',t:{uk:'круїзна яхта, 12,4 м',en:'cruising yacht, 12.4 m'},a:24,m:35},
+{n:'Beneteau Oceanis 51.1',t:{uk:'круїзна яхта, 15,5 м',en:'cruising yacht, 15.5 m'},a:25,m:38}];
+var LEN=[44,52,60,84,100],KIND=['m','m','c','y','y'];
+var lang='uk',mode='wind',cur=3,wind={a:90,s:12};
+try{var sv=localStorage.getItem('lang');if(sv&&D[sv])lang=sv}catch(e){}
+function $(i){return document.getElementById(i)}
+function T(k,r){var s=D[lang][k];if(r)for(var x in r)s=s.replace('{'+x+'}',r[x]);return s}
+function hw(v){var u=v*.514;return .0213*u*u}
+function fm(h){return h<.1?'<0'+(lang==='uk'?',':'.')+'1':h.toFixed(1).replace('.',lang==='uk'?',':'.')}
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function col(){return getComputedStyle(document.documentElement).getPropertyValue('--p').trim()}
+
+/* background canvas */
+var cv=$('c'),ctx=cv.getContext('2d'),W,H,dpr=Math.min(devicePixelRatio||1,2),N=0,ps=[],mouse={x:-999,y:-999},t=0,rgb=col();
+function size(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);N=Math.min(1400,Math.floor(W*H/1400));ps=[];for(var i=0;i<N;i++)ps.push(mk())}
+function mk(){return{x:Math.random()*W,y:Math.random()*H,l:Math.random()*120+40}}
+function ang(x,y,t){return Math.sin(x*.0042+t*.25)*Math.cos(y*.0051-t*.2)*.9+Math.sin((x+y)*.002+t*.1)*.5}
+function drawWaves(){
+ctx.clearRect(0,0,W,H);
+var h=hw(wind.s),dd=Math.cos((wind.a-90)*Math.PI/180),dr=(dd<0?-1:1)*(.4+.6*Math.abs(dd)),k=.009/(1+h*.25);
+for(var i=0;i<7;i++){
+var base=H*(.38+i*.085),amp=(5+h*13)*(.55+i*.12),ph=t*(.6+wind.s*.05)*dr+i*1.7;
+ctx.beginPath();ctx.moveTo(0,H);
+for(var x=0;x<=W+10;x+=10)ctx.lineTo(x,base+amp*(Math.sin(x*k+ph)+.5*Math.sin(x*k*2.3-ph*1.3+i)+.25*Math.sin(x*k*5+ph*.7)));
+ctx.lineTo(W,H);ctx.closePath();ctx.fillStyle='rgba('+rgb+','+(.1+i*.06)+')';ctx.fill()}
+}
+function frame(){
+t+=.016;
+if(mode==='waves'){drawWaves();if(!reduce)requestAnimationFrame(frame);return}
+ctx.globalCompositeOperation='destination-out';ctx.fillStyle='rgba(0,0,0,.07)';ctx.fillRect(0,0,W,H);
+ctx.globalCompositeOperation='source-over';
+var base=(wind.a-90)*Math.PI/180,sp=.6+wind.s*.09;
+ctx.lineWidth=1.3;
+for(var i=0;i<N;i++){
+var p=ps[i],a=base+ang(p.x,p.y,t),vx=Math.cos(a)*sp,vy=Math.sin(a)*sp;
+var dx=p.x-mouse.x,dy=p.y-mouse.y,d=dx*dx+dy*dy;
+if(d<22000){var f=(1-d/22000)*4,m=Math.sqrt(d)+.01;vx+=dx/m*f;vy+=dy/m*f}
+var ox=p.x,oy=p.y;p.x+=vx;p.y+=vy;p.l--;
+ctx.strokeStyle='rgba('+rgb+','+Math.min(.75,.15+sp*.08)+')';
+ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(p.x,p.y);ctx.stroke();
+if(p.l<=0||p.x<-10||p.x>W+10||p.y<-10||p.y>H+10){p.x=Math.random()*W;p.y=Math.random()*H;p.l=Math.random()*120+40}
+}
+if(!reduce)requestAnimationFrame(frame)
+}
+
+/* boat scene */
+var sc=$('sea'),sx=sc.getContext('2d'),SW=300,SH=220,dprs=dpr;
+var boat={x:0,st:'sail',over:0,sink:0,bub:[]},tt=0,vis=true,run=false,last=0,fr=0,C={p:'36,64,255',ink:'#0a1b3d'};
+function cols(){var s=getComputedStyle(document.documentElement);C.p=s.getPropertyValue('--p').trim();C.ink=s.getPropertyValue('--ink').trim()}
+function fit(){var w=sc.clientWidth;if(!w)return;SW=w;sc.width=w*dprs;sc.height=SH*dprs;sx.setTransform(dprs,0,0,dprs,0,0)}
+function dirOf(){return Math.cos((wind.a-90)*Math.PI/180)<0?-1:1}
+function spawn(){boat.st='sail';boat.over=0;boat.sink=0;boat.bub=[];boat.x=dirOf()>0?-LEN[cur]:SW+LEN[cur]}
+function surf(x,h,ph){var k=.02/(1+h*.15),A=Math.min(30,3+h*4.5);return 150+A*(Math.sin(x*k+ph)+.4*Math.sin(x*k*2.1-ph*1.2))}
+function band(h,ph,a,dy){sx.beginPath();sx.moveTo(0,SH);for(var x=0;x<=SW+8;x+=8)sx.lineTo(x,surf(x,h,ph)+dy);sx.lineTo(SW,SH);sx.closePath();sx.fillStyle='rgba('+C.p+','+a+')';sx.fill()}
+function hull(L,hh){sx.beginPath();sx.moveTo(-L/2,-hh);sx.lineTo(L/2,-hh*1.35);sx.quadraticCurveTo(L/2-L*.1,0,L/2-L*.25,0);sx.lineTo(-L/2+L*.1,0);sx.closePath();sx.fill()}
+function drawBoat(L,by,sl,v,dS){
+var hh=L*.14,k=KIND[cur],s=boat.sink,depth=s*s*(L*1.2+60),rot=Math.atan(sl)*.9+dS*(Math.min(.3,v/130)+s*1.2),top=L*.95,mx=-L*.05;
+sx.save();sx.translate(boat.x,by+hh*.35+depth);sx.rotate(rot);sx.scale(dS,1);
+sx.fillStyle=C.ink;sx.strokeStyle=C.ink;sx.lineWidth=1.5;
+hull(L,hh);
+if(k==='c'){sx.globalAlpha=.55;sx.save();sx.translate(-L*.05,-hh*.9);hull(L*.95,hh*.8);sx.restore();sx.globalAlpha=1}
+sx.beginPath();sx.moveTo(mx,-hh);sx.lineTo(mx,-top);sx.stroke();
+sx.fillStyle='#f4f7fb';sx.beginPath();sx.moveTo(mx-2,-top);sx.lineTo(mx-2,-hh*1.5);sx.lineTo(mx-L*.42,-hh*1.5);sx.closePath();sx.fill();sx.stroke();
+if(k==='y'){sx.fillStyle='#dbe6f3';sx.beginPath();sx.moveTo(mx+2,-top*.96);sx.lineTo(mx+2,-hh*1.5);sx.lineTo(L*.44,-hh*1.5);sx.closePath();sx.fill();sx.stroke()}
+sx.restore()}
+function step(dt){
+tt+=dt;fr++;if(fr%40===0)cols();
+var v=wind.s,b=B[cur],h=hw(v),L=LEN[cur],dS=dirOf(),ph=-tt*(1+v*.06)*dS,wv=mode==='waves';
+if(boat.st==='sail'){
+boat.x+=dS*(18+v*2.4)*dt;
+if(dS>0&&boat.x>SW+L)boat.x=-L;
+if(dS<0&&boat.x<-L)boat.x=SW+L;
+if(v>=b.m){boat.over+=dt;if(boat.over>2.2){boat.st='sink';boat.sink=0}}else boat.over=Math.max(0,boat.over-dt*2);
+}else if(boat.st==='sink'){boat.sink+=dt/2.4;if(boat.sink>=1)boat.st='gone'}
+var by=surf(boat.x,h,ph),sl=(surf(boat.x+6,h,ph)-surf(boat.x-6,h,ph))/12;
+if(boat.st==='sink'&&Math.random()<.6)boat.bub.push({x:boat.x+(Math.random()-.5)*L*.6,y:by,r:1.5+Math.random()*3,l:1});
+boat.bub=boat.bub.filter(function(q){q.y-=26*dt;q.l-=dt*.7;return q.l>0});
+sx.clearRect(0,0,SW,SH);
+band(h,ph+1.4,.16,-10);
+if(boat.st!=='gone')drawBoat(L,by,sl,v,dS);
+band(h,ph,.34,0);
+boat.bub.forEach(function(q){sx.beginPath();sx.arc(q.x,q.y,q.r,0,6.3);sx.strokeStyle='rgba('+C.p+','+q.l*.8+')';sx.lineWidth=1.2;sx.stroke()});
+sx.textAlign='center';sx.fillStyle=C.ink;
+if(boat.st==='gone'){sx.font='600 18px Unbounded,sans-serif';sx.fillText(T('sunk'),SW/2,44);sx.font='500 14px Manrope,sans-serif';sx.fillText(T(wv?'sunkW':'sunkH'),SW/2,70,SW-16)}
+else if(boat.over>0){sx.font='600 16px Unbounded,sans-serif';sx.fillStyle='#d63a3a';sx.fillText(T(wv?'ovW':'ovH'),SW/2,44,SW-16)}
+}
+function seaFrame(now){if(!vis||reduce){run=false;return}var dt=Math.min(.05,(now-last)/1000);last=now;step(dt);requestAnimationFrame(seaFrame)}
+function start(){if(run||reduce)return;run=true;last=performance.now();requestAnimationFrame(seaFrame)}
+
+/* text and state */
+function seaIdx(h){var a=[.1,.5,1.25,2.5,4,6,9],i=0;while(i<a.length&&h>=a[i])i++;return i}
+function bfIdx(v){return v<=6?0:v<=16?1:v<=27?2:3}
+function buildList(){
+var l=$('list');l.innerHTML='';
+B.forEach(function(b,i){var e=document.createElement('button');e.className='boat';e.type='button';e.setAttribute('data-i',i);
+e.innerHTML='<b>'+b.n+'</b><span>'+b.t[lang]+'</span>';l.appendChild(e)})}
+function upd(){
+wind.a=+$('dir').value;wind.s=+$('spd').value;$('spd2').value=wind.s;
+var v=wind.s,h=hw(v),wv=mode==='waves',b=B[cur],d=D[lang],i;
+$('dv').textContent=wind.a;$('needle').setAttribute('transform','rotate('+wind.a+' 66 66)');
+$('sp').textContent=wv?fm(h):v;$('su').textContent=wv?d.um:d.kn;
+$('lw').textContent=wv?d.lwv:d.lwd;$('kn').textContent=wv?fm(h):v;$('ku').textContent=wv?d.mu:d.kn;
+$('bf').textContent=wv?d.sea[seaIdx(h)]:d.bf[bfIdx(v)];
+var mk=$('mk');mk.style.left=v/50*100+'%';mk.textContent=wv?fm(h):v;
+$('z1').style.width=b.a/50*100+'%';$('z2').style.width=(b.m-b.a)/50*100+'%';
+var sp=document.querySelectorAll('#sc span'),ks=[0,10,20,30,40,50];
+for(i=0;i<6;i++)sp[i].textContent=(wv?(i?fm(hw(ks[i])):'0'):ks[i])+(i===5?' '+(wv?d.mu:d.kn):'');
+$('vd').textContent=b.n+': '+(v<=b.a?d.v1:v<=b.m?d.v2:d.v3);
+$('nt').textContent=wv?(v<=b.a?d.w1:v<=b.m?d.w2:d.w3)+T('wf',{a:fm(hw(b.a)),m:fm(hw(b.m))}):(v<=b.a?d.n1:v<=b.m?T('n2',{a:b.a}):T('n3',{m:b.m}))+T('nf',{a:b.a,m:b.m});
+Array.prototype.forEach.call($('list').children,function(e,j){e.setAttribute('aria-pressed',j===cur)});
+if(boat.st==='gone'&&v<b.m)spawn();
+if(reduce){boat.st=v>=b.m?'gone':'sail';boat.x=SW*.4;step(0)}
+}
+function applyLang(){
+var d=D[lang];
+document.documentElement.lang=lang;document.title=d.title;
+Array.prototype.forEach.call(document.querySelectorAll('[data-t]'),function(e){e.textContent=d[e.getAttribute('data-t')]});
+Array.prototype.forEach.call(document.querySelectorAll('[data-a]'),function(e){e.setAttribute('aria-label',d[e.getAttribute('data-a')])});
+$('lu').setAttribute('aria-pressed',lang==='uk');$('le').setAttribute('aria-pressed',lang==='en');
+$('hw').textContent=mode==='wind'?d.hw:d.hv;$('hint').textContent=mode==='wind'?d.hintw:d.hintv;
+buildList();upd();
+try{localStorage.setItem('lang',lang)}catch(e){}
+}
+function setMode(m){
+mode=m;document.documentElement.setAttribute('data-mode',m);rgb=col();cols();ctx.clearRect(0,0,W,H);
+$('mw').setAttribute('aria-pressed',m==='wind');$('mv').setAttribute('aria-pressed',m==='waves');
+$('hw').textContent=m==='wind'?D[lang].hw:D[lang].hv;$('hint').textContent=m==='wind'?D[lang].hintw:D[lang].hintv;
+upd();if(reduce)frame()}
+
+/* events */
+addEventListener('pointermove',function(e){mouse.x=e.clientX;mouse.y=e.clientY});
+addEventListener('pointerleave',function(){mouse.x=mouse.y=-999});
+addEventListener('resize',function(){size();fit()});
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){rgb=col();cols()});
+$('dir').addEventListener('input',upd);$('spd').addEventListener('input',upd);
+$('spd2').addEventListener('input',function(e){$('spd').value=e.target.value;upd()});
+$('list').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;cur=+b.getAttribute('data-i');spawn();upd()});
+$('mw').addEventListener('click',function(){setMode('wind')});
+$('mv').addEventListener('click',function(){setMode('waves')});
+$('lu').addEventListener('click',function(){lang='uk';applyLang()});
+$('le').addEventListener('click',function(){lang='en';applyLang()});
+if('IntersectionObserver' in window)new IntersectionObserver(function(e){vis=e[0].isIntersecting;if(vis)start()}).observe(sc);
+
+size();fit();cols();spawn();boat.x=SW*.25;
+applyLang();
+if(reduce){for(var k=0;k<200;k++)frame()}else frame();
+start();
+})();
+</script>
+</body>
+</html>
